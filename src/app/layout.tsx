@@ -28,9 +28,9 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <div className="border p-4">Global Header</div>
+        <div className="border p-4 bg-yellow-400">Global Header</div>
         {children}
-        <div className="border p-4">Global Footer</div>
+        <div className="border p-4 bg-yellow-400">Global Footer</div>
         </body>
     </html>
   );
