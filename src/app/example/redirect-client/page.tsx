@@ -1,6 +1,6 @@
-"user client"; // client component
+"use client"; // client component
 // any time you use hook/states use client
-import { useRouter } from "next/router"; // hook
+import { useRouter } from "next/navigation"; // hook
 
 export default function RedirectClient() {
     const router = useRouter();
