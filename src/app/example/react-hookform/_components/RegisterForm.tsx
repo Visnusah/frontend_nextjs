@@ -1,85 +1,110 @@
 "use client";
 import { useForm } from "react-hook-form";
-import { registerSchema, RegisterFormData } from "./schema";
+import { registerSchema, RegisterFormData } from "@/app/example/react-hookform/_components/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
+    const [isPending, startTransition] = useTransition();
+    const [error, setError] = useState('');
     const router = useRouter();
+
     const {
         register,
         handleSubmit,
         formState: { errors, isSubmitting }
     } = useForm<RegisterFormData>({
         resolver: zodResolver(registerSchema),
-        defaultValues: {
-            username: "",
-            firstName: "",
-            lastName: "",
-            email: "admin@gmail.com",
-            password: "",
-            confirmPassword: ""
-        }
     });
+
     const onSubmit = (data: RegisterFormData) => {
-        if (data.email === "admin@gmail.com" && data.password === "admin123") {
-            router.push("/example/react-hookform/login-with-zod");
-        } else {
-            alert("invalid credentials");
-        }
+        // isPending is true during the transition, 
+        // and false after it finishes
+        setError('');
+        startTransition(
+            async () => {
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    // Simulate successful registration
+                    router.push("/login");
+                } catch (error: any) {
+                    setError(error?.message || 'Registration failed');
+                }
+            }
+        );
     }
     return (
-        <div>
+        <div className="max-w-md mx-auto p-4">
             <form onSubmit={handleSubmit(onSubmit)}>
-                <div>
-                    <label>Username: </label>
-                    <input 
-                        type="text" 
-                        {...register("username")} 
+                {error && <div className="mb-4 text-red-500 border border-red-500 p-2 rounded">{error}</div>}
+                <div className="mb-4">
+                    <label className="block mb-1">Email:</label>
+                    <input
+                        type="email"
+                        {...register("email")}
+                        placeholder="Email"
+                        className="w-full border p-2 rounded"
                     />
-                    { errors.username && <span>{errors.username.message}</span> }
+                    {errors.email && <span className="text-red-500">{errors.email.message}</span>}
                 </div>
-                <div>
-                    <label>First Name: </label>
-                    <input 
-                        type="text" 
-                        {...register("firstName")} 
+                <div className="mb-4">
+                    <label className="block mb-1">First Name:</label>
+                    <input
+                        type="text"
+                        {...register("firstName")}
+                        className="w-full border p-2 rounded"
                     />
-                    { errors.firstName && <span>{errors.firstName.message}</span> }
+                    {errors.firstName && <span className="text-red-500">{errors.firstName.message}</span>}
                 </div>
-                <div>
-                    <label>Last Name: </label>
-                    <input 
-                        type="text" 
-                        {...register("lastName")} 
+                <div className="mb-4">
+                    <label className="block mb-1">Last Name:</label>
+                    <input
+                        type="text"
+                        {...register("lastName")}
+                        className="w-full border p-2 rounded"
                     />
-                    { errors.lastName && <span>{errors.lastName.message}</span> }
+                    {errors.lastName && <span className="text-red-500">{errors.lastName.message}</span>}
                 </div>
-                <div>
-                    <label>Email: </label>
-                    <input 
-                        type="email" 
-                        {...register("email")} 
+                <div className="mb-4">
+                    <label className="block mb-1">Username:</label>
+                    <input
+                        type="text"
+                        {...register("username")}
+                        className="w-full border p-2 rounded"
                     />
-                    { errors.email && <span>{errors.email.message}</span> }
+                    {errors.username && <span className="text-red-500">{errors.username.message}</span>}
                 </div>
-                <div>
-                    <label>Password: </label>
-                    <input 
-                        type="password" 
-                        {...register("password")} 
+                <div className="mb-4">
+                    <label className="block mb-1">Password:</label>
+                    <input
+                        type="password"
+                        {...register("password")}
+                        className="w-full border p-2 rounded"
                     />
-                    { errors.password && <span>{errors.password.message}</span> }
+                    {errors.password && <span className="text-red-500">{errors.password.message}</span>}
                 </div>
-                <div>
-                    <label>Confirm Password: </label>
-                    <input 
-                        type="password" 
-                        {...register("confirmPassword")} 
+                <div className="mb-4">
+                    <label className="block mb-1">Confirm Password:</label>
+                    <input
+                        type="password"
+                        {...register("confirmPassword")}
+                        className="w-full border p-2 rounded"
                     />
-                    { errors.confirmPassword && <span>{errors.confirmPassword.message}</span> }
+                    {errors.confirmPassword && <span className="text-red-500">{errors.confirmPassword.message}</span>}
                 </div>
-                <button type="submit" disabled={isSubmitting}>Register</button>
+                <button
+                    type="submit"
+                    disabled={isSubmitting || isPending}
+                    className="w-full bg-blue-500 text-white p-2 rounded"
+                >
+                    {isPending ? "Registering..." : "Register"}
+                </button>
+                <div className="mt-4">
+                    <p className="mt-4 text-center">
+                        Already have an account? <a href="/login" className="text-blue-500">Login here</a>.
+                    </p>
+                </div>
             </form>
         </div>
     );
