@@ -22,3 +22,18 @@ export const register = async (data: any) => {
         );
     }
 };
+
+export const login = async (data: any) => {
+     try {
+        // Send POST request to the Login endpoint
+        const response = await axiosInstance.post(API.AUTH.LOGIN, data);
+        
+        // Return the payload from the response
+        return response.data;
+    } catch (error: any) {
+        // Handle potential errors and extract the error message
+        throw new Error(
+            error?.response?.data?.message || "Login failed"
+        );
+    }
+};
