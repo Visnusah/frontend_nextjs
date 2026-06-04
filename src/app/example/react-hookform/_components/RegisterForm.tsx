@@ -4,6 +4,7 @@ import { registerSchema, RegisterFormData } from "@/app/example/react-hookform/_
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { registerUser } from "../../../../../lib/actions/auth-action";
 
 export default function RegisterForm() {
     const [isPending, startTransition] = useTransition();
@@ -25,8 +26,11 @@ export default function RegisterForm() {
         startTransition(
             async () => {
                 try {
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                    // Simulate successful registration
+                    const result = await registerUser(data);
+                    if (!result.success) {
+                        setError(result.message || "Register Failed")
+                        return;
+                    }
                     router.push("/login");
                 } catch (error: any) {
                     setError(error?.message || 'Registration failed');

@@ -1,45 +1,74 @@
 "use client";
 import { useForm } from "react-hook-form";
-import { required } from "zod/v4-mini";
+import { LoginFormData, loginSchema } from "@/app/example/react-hookform/_components/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 export default function LoginForm() {
-  const {
-    register, // to implement in input
-    handleSubmit, // to implement submission
-    formState: { errors, isSubmitting },
-  } = useForm({
-    defaultValues: {
-      email: "", // states default
-      password: "",
-    },
-  });
-  const onSubmit = (data: any) => {
-    alert("Submitted data: " + data.email + ", " + data.password);
-  };
-  return (
-    <div>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div>
-          <label htmlFor="">Email</label>
-          <input
-            className="border"
-            type="email"
-            {...register("email", { required: "Email is required" })}
-          />
-          {errors.email && <span>(errors.email.message)</span>}
+    const [isPending, startTransition] = useTransition();
+    const [error, setError] = useState('');
+    const router = useRouter();
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting }
+    } = useForm<LoginFormData>({
+        resolver: zodResolver(loginSchema),
+    });
+
+    const onSubmit = (data: LoginFormData) => {
+        // isPending is true during the transition, 
+        // and false after it finishes
+        setError('');
+        startTransition(
+            async () => {
+                try {
+                    
+                } catch (error: any) {
+                    setError(error?.message || 'Login failed');
+                }
+            }
+        );
+    }
+    return (
+        <div className="max-w-md mx-auto p-4">
+            <form onSubmit={handleSubmit(onSubmit)}>
+                {error && <div className="mb-4 text-red-500 border border-red-500 p-2 rounded">{error}</div>}
+                <div className="mb-4">
+                    <label className="block mb-1">Email:</label>
+                    <input
+                        type="email"
+                        {...register("email")}
+                        placeholder="Email"
+                        className="w-full border p-2 rounded"
+                    />
+                    {errors.email && <span className="text-red-500">{errors.email.message}</span>}
+                </div>
+                
+                <div className="mb-4">
+                    <label className="block mb-1">Password:</label>
+                    <input
+                        type="password"
+                        {...register("password")}
+                        className="w-full border p-2 rounded"
+                    />
+                    {errors.password && <span className="text-red-500">{errors.password.message}</span>}
+                </div>
+                
+                <button
+                    type="submit"
+                    disabled={isSubmitting || isPending}
+                    className="w-full bg-blue-500 text-white p-2 rounded"
+                >
+                    {isPending ? "Logging in..." : "Login"}
+                </button>
+                <div className="mt-4">
+                    <p className="mt-4 text-center">
+                        Don't have an account? <a href="/register" className="text-blue-500">Register here</a>.
+                    </p>
+                </div>
+            </form>
         </div>
-        <div>
-          <label>Password</label>
-          <input
-            className="border"
-            type="password"
-            {...register("password", { required: "password is required" })}
-          />
-          {errors.password && <span>(errors.password.message)</span>}
-        </div>
-        <button className="border" type="submit" disabled={isSubmitting}>
-          Login
-        </button>
-      </form>
-    </div>
-  );
+    );
 }
