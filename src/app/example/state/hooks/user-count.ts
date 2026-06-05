@@ -2,7 +2,7 @@
 // to resuse and manage seperately from UI logic
 import { useState, useEffect } from "react";
 // naming convention: use + name of hook (useCount, useAuth, useBlog)
-export default function useCount() {
+export default function useCount(p0: number) {
     const [count, setCount] = useState(0);
     const [count2, setCount2] = useState(0);
 

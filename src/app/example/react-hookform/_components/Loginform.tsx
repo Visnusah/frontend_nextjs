@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { loginUser } from "../../../../../lib/actions/auth-action";
+import { useAuth } from "../../../../../lib/context/AuthContext";
 
 export default function LoginForm() {
     const [isPending, startTransition] = useTransition();
